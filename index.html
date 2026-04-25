@@ -50,14 +50,14 @@ html, body { width: 100%; height: 100dvh; overflow: hidden; font-family: 'Noto S
 #map-svg { width: 100%; height: 100%; display: block; }
 
 .dz {
-  stroke: rgba(255,255,255,0.7); stroke-width: 1.2;
-  cursor: default; opacity: 0.82;
-  transition: opacity .15s, stroke-width .15s, stroke .15s;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,.15));
+  fill: #e8e0d4; stroke: #c0b09a; stroke-width: 1.2;
+  cursor: default;
+  transition: fill .4s, opacity .15s, stroke-width .15s, stroke .15s;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.1));
 }
-.dz.hov { opacity: 1; stroke: white; stroke-width: 2.5; filter: drop-shadow(0 2px 6px rgba(0,0,0,.3)); }
-.dz.ok { opacity: 1; stroke: white; stroke-width: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,.2)); }
-.dz.bad { stroke: #fff; stroke-width: 2.5; animation: badflash .4s; }
+.dz.hov { fill: #d8cfc4; stroke: #8a7a6a; stroke-width: 2; filter: drop-shadow(0 2px 6px rgba(0,0,0,.2)); }
+.dz.ok { stroke: white; stroke-width: 2; filter: drop-shadow(0 2px 6px rgba(0,0,0,.25)); }
+.dz.bad { stroke: #c0392b; stroke-width: 2.5; animation: badflash .4s; }
 
 @keyframes badflash {
   0%,100% { filter: drop-shadow(0 0 0px red); }
@@ -72,7 +72,12 @@ html, body { width: 100%; height: 100dvh; overflow: hidden; font-family: 'Noto S
 }
 .lbl.ok { fill: rgba(0,0,0,0.75); font-size: 10px; }
 
-.han { fill: var(--han); opacity: .75; pointer-events: none; }
+.han-river {
+  fill: #6aafd4;
+  opacity: .82;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 4px rgba(50,120,180,.3));
+}
 
 /* ── 조각 패널 ── */
 #panel { width: 175px; flex-shrink: 0; background: var(--surface); border-left: 1.5px solid var(--border); display: flex; flex-direction: column; }
@@ -83,14 +88,15 @@ html, body { width: 100%; height: 100dvh; overflow: hidden; font-family: 'Noto S
 #pieces::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .piece {
-  height: 33px; border: 1.5px solid; border-radius: 6px;
+  height: 33px; border: 1.5px solid #c8b89a; border-radius: 6px;
+  background: #f5f0e8;
   display: flex; align-items: center; padding: 0 10px;
   cursor: grab; user-select: none; touch-action: none;
-  font-size: 12.5px; font-weight: 700; color: #1a1208;
-  transition: transform .1s, opacity .2s, box-shadow .1s;
+  font-size: 12.5px; font-weight: 700; color: #3a2e1e;
+  transition: transform .1s, opacity .2s, box-shadow .1s, background .15s;
   flex-shrink: 0;
 }
-.piece:hover { transform: translateX(3px); box-shadow: 2px 2px 6px rgba(0,0,0,.15); }
+.piece:hover { background: #ede5d8; transform: translateX(3px); box-shadow: 2px 2px 6px rgba(0,0,0,.12); border-color: #a08060; }
 .piece.drag { opacity: .3; cursor: grabbing; }
 .piece.gone { display: none; }
 
@@ -199,8 +205,58 @@ html, body { width: 100%; height: 100dvh; overflow: hidden; font-family: 'Noto S
 <div id="game">
   <div id="map-area">
     <svg id="map-svg" viewBox="0 0 780 680" preserveAspectRatio="xMidYMid meet">
-      <path class="han" d="M28,375 Q60,360 100,365 Q140,368 170,375 Q200,382 230,378 Q260,374 285,378 Q310,382 335,385 Q365,390 395,385 Q425,378 455,375 Q490,372 520,375 Q555,378 590,372 Q625,368 660,370 Q700,373 752,378 L752,400 Q700,396 660,392 Q625,390 590,396 Q555,402 520,398 Q490,395 455,398 Q425,402 395,408 Q365,413 335,408 Q310,405 285,402 Q260,398 230,402 Q200,406 170,398 Q140,392 100,388 Q60,385 28,400 Z"/>
+      <!-- 배경 -->
+      <rect width="780" height="680" fill="#ede8df"/>
+      <!-- 구 레이어 (한강 아래) -->
       <g id="dzones"></g>
+      <!-- 한강 (구 위에 그려서 항상 보임) -->
+      <g id="han-layer" pointer-events="none">
+        <!-- 한강 본류 — 실제 경로 근사 (서쪽 강서구→동쪽 강동구) -->
+        <path class="han-river" d="
+          M 28,348
+          C 45,342 65,338 88,340
+          C 105,341 118,348 132,352
+          C 148,357 158,360 172,358
+          C 185,356 195,350 210,348
+          C 225,346 238,348 250,352
+          C 262,356 270,362 282,364
+          C 295,366 308,364 320,360
+          C 333,356 342,350 355,348
+          C 368,346 380,347 392,350
+          C 405,353 415,358 428,360
+          C 442,362 455,360 468,356
+          C 480,352 490,346 504,344
+          C 518,342 532,344 546,348
+          C 558,352 568,358 580,360
+          C 593,362 606,360 618,356
+          C 630,352 640,346 654,344
+          C 668,342 685,344 700,348
+          C 718,352 735,356 752,354
+          L 752,382
+          C 735,384 718,382 700,378
+          C 685,374 668,370 654,372
+          C 640,374 630,380 618,384
+          C 606,388 593,390 580,388
+          C 568,386 558,380 546,376
+          C 532,372 518,370 504,372
+          C 490,374 480,380 468,384
+          C 455,388 442,390 428,388
+          C 415,386 405,381 392,378
+          C 380,375 368,374 355,376
+          C 342,378 333,384 320,388
+          C 308,392 295,394 282,392
+          C 270,390 262,384 250,380
+          C 238,376 225,374 210,376
+          C 195,378 185,384 172,386
+          C 158,388 148,385 132,380
+          C 118,376 105,369 88,368
+          C 65,366 45,370 28,376
+          Z"/>
+
+        <!-- 한강 위 레이블 -->
+        <text x="390" y="363" text-anchor="middle" font-family="'Noto Sans KR',sans-serif" font-size="11" font-weight="700" fill="rgba(30,80,120,0.7)" letter-spacing="4">한  강</text>
+      </g>
+      <!-- 구 이름 레이어 -->
       <g id="lbls"></g>
     </svg>
   </div>
@@ -336,11 +392,11 @@ function buildMap(){
   const dg=document.getElementById('dzones'), lg=document.getElementById('lbls');
   dg.innerHTML=''; lg.innerHTML='';
   NAMES.forEach(n=>{
-    const d=DISTRICT_DATA[n], color=COLORS[n]||'#888';
+    const d=DISTRICT_DATA[n];
     const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');
     p.setAttribute('points',d.pts);
     p.setAttribute('class','dz');
-    p.setAttribute('fill',color);
+    // 초기엔 색 없음 — 정답 맞추면 색이 나타남
     p.dataset.n=n;
     dg.appendChild(p);
     const t=document.createElementNS('http://www.w3.org/2000/svg','text');
@@ -350,29 +406,16 @@ function buildMap(){
   });
 }
 
-// ── 조각 구축 ──
+// ── 조각 구축 ── (모두 같은 단일 스타일)
 function buildPieces(){
   const c=document.getElementById('pieces'); c.innerHTML='';
   [...NAMES].sort(()=>Math.random()-.5).forEach(n=>{
-    const color=COLORS[n]||'#888';
-    // 밝은 배경색 계산
     const el=document.createElement('div');
     el.className='piece'; el.textContent=n; el.dataset.n=n;
-    el.style.background=color+'22';
-    el.style.borderColor=color;
-    el.style.color=darken(color);
     el.addEventListener('mousedown',onMD);
     el.addEventListener('touchstart',onTS,{passive:false});
     c.appendChild(el);
   });
-}
-
-function darken(hex){
-  // 색상을 조금 더 어둡게
-  const r=parseInt(hex.slice(1,3),16);
-  const g=parseInt(hex.slice(3,5),16);
-  const b=parseInt(hex.slice(5,7),16);
-  return `rgb(${Math.max(0,r-60)},${Math.max(0,g-60)},${Math.max(0,b-60)})`;
 }
 
 // ── 드래그 ──
@@ -401,6 +444,8 @@ function endDrag(x,y){
   if(h===pn){
     correct++;
     const dz=document.querySelector(`.dz[data-n="${pn}"]`);
+    // 정답 맞추면 해당 구에 색상 등장!
+    dz.style.fill=COLORS[pn]||'#888';
     dz.classList.add('ok');
     const t=document.querySelector(`.lbl[data-n="${pn}"]`);
     t.textContent=pn; t.classList.add('ok');
