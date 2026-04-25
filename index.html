@@ -6,88 +6,179 @@
 <title>서울 25구 퍼즐 — 통합사회1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Black+Han+Sans&display=swap');
+
 :root {
-  --bg:#f5f0e8; --surface:#fffdf8; --surface2:#f0ebe0;
-  --border:#c8b89a; --ink:#1e1608; --text:#2a2010;
-  --dim:#8a7a60; --gold:#b8860b; --gold-lt:#f0d060;
-  --correct:#2e7d4f; --correct-bg:#e8f5ee;
-  --wrong:#c0392b; --accent:#2c5f8a; --accent-lt:#e8f0f8;
-  --han:#a8c4d8;
+  --bg: #f7f3ed;
+  --surface: #ffffff;
+  --border: #ddd5c8;
+  --ink: #1a1208;
+  --dim: #8a7a6a;
+  --gold: #c8860a;
+  --correct: #2e7d4f;
+  --wrong: #c0392b;
+  --accent: #2c5f8a;
+  --han: #7ab3d4;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100dvh;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100dvh; overflow: hidden; font-family: 'Noto Sans KR', sans-serif; background: var(--bg); }
 
 /* ── 헤더 ── */
-#hdr{height:50px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;gap:10px}
-#hdr h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(12px,2.2vw,19px);color:var(--gold-lt);letter-spacing:.04em;white-space:nowrap}
-#hdr .sub{font-size:9px;color:rgba(255,255,255,.45);margin-top:1px;white-space:nowrap}
-.hdr-stats{display:flex;gap:18px;align-items:center}
-.stat{display:flex;flex-direction:column;align-items:center;line-height:1.1}
-.stat .v{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--gold-lt)}
-.stat .l{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:.05em}
-.hint-btn{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);font-family:'Noto Sans KR',sans-serif;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.hint-btn.on{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+#hdr {
+  height: 52px; background: var(--ink);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 16px; flex-shrink: 0;
+  border-bottom: 3px solid var(--gold);
+}
+#hdr h1 { font-family: 'Black Han Sans', sans-serif; font-size: clamp(13px,2.2vw,20px); color: var(--gold); letter-spacing: .05em; }
+#hdr .sub { font-size: 9px; color: rgba(255,255,255,.4); margin-top: 1px; }
+.hstats { display: flex; gap: 16px; align-items: center; }
+.stat { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+.stat .v { font-family: 'Black Han Sans', sans-serif; font-size: 19px; color: #f0d060; }
+.stat .l { font-size: 9px; color: rgba(255,255,255,.45); letter-spacing: .05em; }
+#timer-display { font-family: 'Black Han Sans', sans-serif; font-size: 22px; color: #f0d060; min-width: 60px; text-align: center; }
 
 /* 진행바 */
-#pgbar{height:3px;background:rgba(0,0,0,.1);flex-shrink:0}
-#pgfill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));width:0%;transition:width .5s}
+#pgbar { height: 4px; background: rgba(0,0,0,.08); flex-shrink: 0; }
+#pgfill { height: 100%; background: linear-gradient(90deg, #2c5f8a, #c8860a); width: 0%; transition: width .5s; }
 
-/* ── 레이아웃 ── */
-#game{display:flex;height:calc(100dvh - 53px);overflow:hidden}
+/* ── 게임 레이아웃 ── */
+#game { display: flex; height: calc(100dvh - 56px); overflow: hidden; }
 
 /* ── 지도 ── */
-#map-area{flex:1;position:relative;overflow:hidden;background:var(--bg)}
-#map-svg{width:100%;height:100%;display:block}
+#map-area { flex: 1; position: relative; overflow: hidden; background: #eee8dc; }
+#map-svg { width: 100%; height: 100%; display: block; }
 
-/* drop zone 스타일 */
-.dz{fill:rgba(255,255,255,.15);stroke:#b8a880;stroke-width:.9;stroke-dasharray:3 2.5;cursor:default;transition:fill .12s,stroke .12s,stroke-width .12s}
-.dz.hov{fill:rgba(44,95,138,.12);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:none}
-.dz.ok{fill:var(--correct-bg);stroke:var(--correct);stroke-width:1.5;stroke-dasharray:none}
-.dz.bad{fill:rgba(192,57,43,.1);stroke:var(--wrong);stroke-width:1.8;stroke-dasharray:none}
+.dz {
+  stroke: rgba(255,255,255,0.7); stroke-width: 1.2;
+  cursor: default; opacity: 0.82;
+  transition: opacity .15s, stroke-width .15s, stroke .15s;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.15));
+}
+.dz.hov { opacity: 1; stroke: white; stroke-width: 2.5; filter: drop-shadow(0 2px 6px rgba(0,0,0,.3)); }
+.dz.ok { opacity: 1; stroke: white; stroke-width: 2; filter: drop-shadow(0 2px 4px rgba(0,0,0,.2)); }
+.dz.bad { stroke: #fff; stroke-width: 2.5; animation: badflash .4s; }
 
-/* 레이블 */
-.lbl{font-family:'Noto Sans KR',sans-serif;font-size:9px;fill:rgba(80,65,40,.3);text-anchor:middle;dominant-baseline:middle;pointer-events:none;user-select:none;transition:fill .2s}
-.lbl.hint-on{fill:rgba(80,65,40,.55)}
-.lbl.ok{fill:var(--correct);font-size:10px;font-weight:700}
+@keyframes badflash {
+  0%,100% { filter: drop-shadow(0 0 0px red); }
+  50% { filter: drop-shadow(0 0 12px red); }
+}
 
-/* 한강 */
-.han{fill:var(--han);opacity:.8;pointer-events:none}
+.lbl {
+  font-family: 'Noto Sans KR', sans-serif; font-size: 9.5px; font-weight: 700;
+  fill: rgba(0,0,0,0); text-anchor: middle; dominant-baseline: middle;
+  pointer-events: none; user-select: none; transition: fill .3s;
+  text-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+.lbl.ok { fill: rgba(0,0,0,0.75); font-size: 10px; }
 
-/* 테두리선(행정구역 전체윤곽) */
-.outline{fill:none;stroke:rgba(100,80,50,.15);stroke-width:.5;pointer-events:none}
+.han { fill: var(--han); opacity: .75; pointer-events: none; }
 
 /* ── 조각 패널 ── */
-#panel{width:180px;flex-shrink:0;background:var(--surface);border-left:1.5px solid var(--border);display:flex;flex-direction:column}
-#phdr{padding:9px 12px 7px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--dim);letter-spacing:.08em;display:flex;justify-content:space-between;align-items:center}
-#pcount{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--gold)}
-#pieces{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px}
-#pieces::-webkit-scrollbar{width:3px}
-#pieces::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+#panel { width: 175px; flex-shrink: 0; background: var(--surface); border-left: 1.5px solid var(--border); display: flex; flex-direction: column; }
+#phdr { padding: 9px 12px 7px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: .08em; display: flex; justify-content: space-between; align-items: center; }
+#pcount { font-family: 'Black Han Sans', sans-serif; font-size: 15px; color: var(--gold); }
+#pieces { flex: 1; overflow-y: auto; padding: 7px; display: flex; flex-direction: column; gap: 4px; }
+#pieces::-webkit-scrollbar { width: 3px; }
+#pieces::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-.piece{height:34px;border:1px solid var(--border);border-radius:5px;background:var(--surface2);display:flex;align-items:center;padding:0 10px;cursor:grab;user-select:none;touch-action:none;font-size:12.5px;font-weight:700;color:var(--text);position:relative;overflow:hidden;transition:transform .1s,background .12s,opacity .2s;flex-shrink:0}
-.piece::after{content:'⠿';position:absolute;right:8px;color:var(--border);font-size:12px}
-.piece:hover{background:#e8e0d0;border-color:var(--accent)}
-.piece.drag{opacity:.3;cursor:grabbing}
-.piece.gone{display:none}
+.piece {
+  height: 33px; border: 1.5px solid; border-radius: 6px;
+  display: flex; align-items: center; padding: 0 10px;
+  cursor: grab; user-select: none; touch-action: none;
+  font-size: 12.5px; font-weight: 700; color: #1a1208;
+  transition: transform .1s, opacity .2s, box-shadow .1s;
+  flex-shrink: 0;
+}
+.piece:hover { transform: translateX(3px); box-shadow: 2px 2px 6px rgba(0,0,0,.15); }
+.piece.drag { opacity: .3; cursor: grabbing; }
+.piece.gone { display: none; }
 
-/* 유령 */
-#ghost{position:fixed;pointer-events:none;z-index:9999;background:var(--surface);border:2px solid var(--accent);border-radius:7px;padding:6px 14px;font-family:'Noto Sans KR',sans-serif;font-weight:700;font-size:13px;color:var(--accent);box-shadow:0 6px 20px rgba(0,0,0,.2);white-space:nowrap;transform:translate(-50%,-50%) rotate(-1.5deg);display:none}
+/* ── 유령 ── */
+#ghost {
+  position: fixed; pointer-events: none; z-index: 9999;
+  background: white; border: 2px solid var(--accent);
+  border-radius: 8px; padding: 6px 14px;
+  font-family: 'Noto Sans KR', sans-serif; font-weight: 700; font-size: 13px; color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  white-space: nowrap; transform: translate(-50%,-50%) rotate(-2deg);
+  display: none;
+}
 
-/* 피드백 */
-#fb{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.5);opacity:0;pointer-events:none;font-family:'Black Han Sans',sans-serif;font-size:24px;padding:12px 28px;border-radius:10px;z-index:10000;transition:transform .18s cubic-bezier(.34,1.56,.64,1),opacity .12s;letter-spacing:.06em}
-#fb.show{transform:translate(-50%,-50%) scale(1);opacity:1}
-#fb.ok{background:var(--correct);color:#fff}
-#fb.bad{background:var(--wrong);color:#fff}
+/* ── 피드백 ── */
+#fb {
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(.5); opacity: 0; pointer-events: none;
+  font-family: 'Black Han Sans', sans-serif; font-size: 26px;
+  padding: 13px 30px; border-radius: 12px; z-index: 10000;
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), opacity .12s;
+  letter-spacing: .05em;
+}
+#fb.show { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+#fb.ok { background: var(--correct); color: #fff; }
+#fb.bad { background: var(--wrong); color: #fff; }
 
-/* 완료 */
-#done{display:none;position:fixed;inset:0;background:rgba(10,8,4,.82);backdrop-filter:blur(6px);z-index:10001;align-items:center;justify-content:center}
-#done.show{display:flex}
-.done-card{background:var(--surface);border:2.5px solid var(--gold);border-radius:18px;padding:44px 56px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.45)}
-.done-card h2{font-family:'Black Han Sans',sans-serif;font-size:30px;color:var(--ink);margin-bottom:6px}
-.done-card .big{font-family:'Black Han Sans',sans-serif;font-size:60px;color:var(--correct);line-height:1;margin:14px 0 4px}
-.done-card .desc{font-size:13px;color:var(--dim);margin-bottom:24px}
-.btn-r{background:var(--ink);color:var(--gold-lt);border:none;font-family:'Black Han Sans',sans-serif;font-size:16px;padding:12px 36px;border-radius:9px;cursor:pointer;letter-spacing:.08em;transition:background .15s}
-.btn-r:hover{background:#3a3020}
+/* ── 완료 모달 ── */
+#done {
+  display: none; position: fixed; inset: 0;
+  background: rgba(10,8,4,.85); backdrop-filter: blur(8px);
+  z-index: 10001; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+}
+#done.show { display: flex; }
+.done-card {
+  background: white; border: 3px solid var(--gold);
+  border-radius: 20px; padding: 36px 52px; text-align: center;
+  box-shadow: 0 32px 80px rgba(0,0,0,.5); max-width: 420px; width: 90%;
+}
+.done-card h2 { font-family: 'Black Han Sans', sans-serif; font-size: 28px; color: var(--ink); margin-bottom: 6px; }
+.done-stat { display: flex; gap: 32px; justify-content: center; margin: 18px 0; }
+.done-stat div { display: flex; flex-direction: column; align-items: center; }
+.done-stat .dv { font-family: 'Black Han Sans', sans-serif; font-size: 42px; color: var(--correct); line-height: 1; }
+.done-stat .dl { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+/* 이름 입력 */
+#name-input {
+  width: 100%; padding: 10px 14px; border: 2px solid var(--border);
+  border-radius: 8px; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 15px; font-weight: 700; text-align: center;
+  outline: none; margin: 8px 0;
+}
+#name-input:focus { border-color: var(--accent); }
+.btn-submit {
+  background: var(--gold); color: white; border: none;
+  font-family: 'Black Han Sans', sans-serif; font-size: 16px;
+  padding: 11px 32px; border-radius: 9px; cursor: pointer;
+  letter-spacing: .06em; transition: background .15s; width: 100%; margin-top: 4px;
+}
+.btn-submit:hover { background: #a06d08; }
+.btn-restart {
+  background: var(--ink); color: #f0d060; border: none;
+  font-family: 'Black Han Sans', sans-serif; font-size: 14px;
+  padding: 9px 24px; border-radius: 8px; cursor: pointer;
+  letter-spacing: .06em; margin-top: 6px;
+}
+
+/* ── 랭킹 패널 ── */
+#ranking {
+  background: white; border: 2px solid var(--border);
+  border-radius: 16px; padding: 20px 28px;
+  max-width: 420px; width: 90%; max-height: 50dvh; overflow-y: auto;
+}
+#ranking h3 { font-family: 'Black Han Sans', sans-serif; font-size: 18px; color: var(--ink); margin-bottom: 12px; text-align: center; }
+.rank-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid #f0ebe0;
+  font-size: 13px; font-weight: 700;
+}
+.rank-row:last-child { border-bottom: none; }
+.rank-num { font-family: 'Black Han Sans', sans-serif; font-size: 16px; color: var(--dim); min-width: 28px; }
+.rank-num.gold { color: #c8a000; }
+.rank-num.silver { color: #888; }
+.rank-num.bronze { color: #a0622a; }
+.rank-name { flex: 1; color: var(--ink); }
+.rank-time { color: var(--accent); font-family: 'Black Han Sans', sans-serif; }
+.rank-tries { color: var(--dim); font-size: 11px; }
+.rank-me { background: #fff8e8; border-radius: 6px; padding: 2px 6px; }
 </style>
 </head>
 <body>
@@ -95,13 +186,12 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:'Noto Sans KR',sa
 <div id="hdr">
   <div>
     <h1>서울 25구 위치 퍼즐</h1>
-    <div class="sub">통합사회1 · 산업화와 도시화 — 백지도 학습</div>
+    <div class="sub">통합사회1 · 산업화와 도시화</div>
   </div>
-  <div class="hdr-stats">
+  <div class="hstats">
     <div class="stat"><span class="v" id="nc">0</span><span class="l">정답</span></div>
+    <div class="stat"><span id="timer-display">00:00</span><span class="l">시간</span></div>
     <div class="stat"><span class="v" id="nt">0</span><span class="l">시도</span></div>
-    <div class="stat"><span class="v" id="nr">25</span><span class="l">남은 구</span></div>
-    <button class="hint-btn" id="hbtn" onclick="toggleHint()">지명 힌트</button>
   </div>
 </div>
 <div id="pgbar"><div id="pgfill"></div></div>
@@ -109,38 +199,84 @@ html,body{width:100%;height:100dvh;overflow:hidden;font-family:'Noto Sans KR',sa
 <div id="game">
   <div id="map-area">
     <svg id="map-svg" viewBox="0 0 780 680" preserveAspectRatio="xMidYMid meet">
-      <!-- 한강 (실제 경로 근사) -->
       <path class="han" d="M28,375 Q60,360 100,365 Q140,368 170,375 Q200,382 230,378 Q260,374 285,378 Q310,382 335,385 Q365,390 395,385 Q425,378 455,375 Q490,372 520,375 Q555,378 590,372 Q625,368 660,370 Q700,373 752,378 L752,400 Q700,396 660,392 Q625,390 590,396 Q555,402 520,398 Q490,395 455,398 Q425,402 395,408 Q365,413 335,408 Q310,405 285,402 Q260,398 230,402 Q200,406 170,398 Q140,392 100,388 Q60,385 28,400 Z"/>
-
       <g id="dzones"></g>
       <g id="lbls"></g>
     </svg>
   </div>
-
   <div id="panel">
-    <div id="phdr">
-      <span>🧩 구 목록</span>
-      <span id="pcount">25</span>
-    </div>
+    <div id="phdr"><span>🧩 구 목록</span><span id="pcount">25</span></div>
     <div id="pieces"></div>
   </div>
 </div>
 
 <div id="ghost"></div>
 <div id="fb"></div>
+
+<!-- 완료 모달 -->
 <div id="done">
   <div class="done-card">
     <h2>🎉 서울 완성!</h2>
-    <p style="color:var(--dim);font-size:13px">25개 구를 모두 올바른 위치에 배치했습니다</p>
-    <div class="big" id="ftry">—</div>
-    <div class="desc">총 시도 횟수</div>
-    <button class="btn-r" onclick="restart()">다시 도전 🔄</button>
+    <p style="color:var(--dim);font-size:12px">25개 구를 모두 맞췄습니다!</p>
+    <div class="done-stat">
+      <div><span class="dv" id="f-time">—</span><span class="dl">걸린 시간</span></div>
+      <div><span class="dv" id="f-try">—</span><span class="dl">시도 횟수</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);margin-bottom:6px">이름을 입력하고 랭킹에 등록하세요!</p>
+    <input id="name-input" type="text" maxlength="10" placeholder="이름 입력 (최대 10자)">
+    <button class="btn-submit" onclick="submitRanking()">🏆 랭킹 등록</button>
+    <br>
+    <button class="btn-restart" onclick="restart()">다시 도전 🔄</button>
+  </div>
+  <div id="ranking">
+    <h3>🏆 랭킹</h3>
+    <div id="rank-list"><p style="text-align:center;color:#aaa;font-size:13px">불러오는 중...</p></div>
   </div>
 </div>
 
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCnjQ9rC89f8G4YXAm-S22gLBzwHc3OPTk",
+  authDomain: "seoul-puzzle.firebaseapp.com",
+  projectId: "seoul-puzzle",
+  storageBucket: "seoul-puzzle.firebasestorage.app",
+  messagingSenderId: "29945295306",
+  appId: "1:29945295306:web:fffaf24d6045082c2f9f33",
+  measurementId: "G-E38B9L86YF"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 전역으로 노출
+window._db = db;
+window._col = collection(db, 'rankings');
+window._addDoc = addDoc;
+window._getDocs = getDocs;
+window._query = query;
+window._orderBy = orderBy;
+window._limit = limit;
+</script>
+
 <script>
-// ── 실제 GeoJSON(southkorea/seoul-maps) 기반 SVG 좌표 ──
-// Python으로 WGS84 → SVG 780×680 변환
+// ── 구별 색상 팔레트 (25색) ──
+const COLORS = {
+  "강동구": "#e8734a", "송파구": "#d4595a", "강남구": "#c05a8a",
+  "서초구": "#8b5ea8", "관악구": "#5b6abf", "동작구": "#4a8fc4",
+  "영등포구": "#3aa8a8", "금천구": "#4aaa6a", "구로구": "#7ab83a",
+  "강서구": "#b8c030", "양천구": "#e0b020", "마포구": "#e88030",
+  "서대문구": "#d4604a", "은평구": "#c06090", "노원구": "#9060c0",
+  "도봉구": "#6070d0", "강북구": "#4090c8", "성북구": "#30a898",
+  "중랑구": "#50b850", "동대문구": "#90b830", "광진구": "#d09820",
+  "성동구": "#d07030", "용산구": "#c05060", "중구": "#a850a0",
+  "종로구": "#6858c0"
+};
+
+// ── 구 SVG 데이터 ──
 const DISTRICT_DATA = {
   "강동구": {"pts":"630.5,350.6 636.7,351.3 641.3,345.3 646.3,341.7 666.4,332.0 689.5,324.6 699.5,319.9 719.8,306.7 726.0,307.3 735.8,306.6 741.0,304.0 738.2,311.8 739.4,318.7 742.5,323.7 744.7,330.4 745.5,338.4 749.7,349.2 748.7,367.7 751.7,370.4 750.9,378.6 752.0,384.7 748.9,385.2 744.6,381.9 738.6,385.2 733.0,384.4 722.4,387.4 717.2,385.6 700.5,410.8 700.0,421.5 693.4,430.0 690.4,438.1 687.1,438.3 685.2,444.2 685.0,449.8 682.6,448.7 640.9,424.4 643.1,419.2 648.0,400.5 639.8,395.0 624.4,389.2 628.7,379.8 631.9,366.6 631.9,354.6 630.5,350.6","cx":696.5,"cy":371.2},
   "송파구": {"pts":"550.7,431.2 560.9,434.4 569.0,434.7 580.6,432.7 594.4,427.3 605.7,425.4 612.6,410.8 624.4,389.2 639.8,395.0 648.0,400.5 643.1,419.2 640.9,424.4 682.6,448.7 685.0,449.8 685.0,452.9 681.4,455.8 679.0,460.4 677.0,468.9 679.0,476.1 686.1,480.6 690.3,481.1 694.6,478.3 697.6,481.4 709.5,484.8 714.0,488.0 711.5,495.8 711.7,501.3 708.7,510.1 706.1,513.9 697.5,516.9 693.3,533.8 693.3,537.9 688.2,542.1 680.6,542.4 675.3,549.4 667.0,545.9 661.0,544.9 661.4,553.3 669.1,558.9 664.4,562.0 657.5,562.0 651.4,558.3 651.4,564.0 646.4,568.2 646.4,563.5 643.4,556.4 628.1,528.8 629.1,526.3 623.5,514.9 617.7,508.2 611.7,503.4 602.2,498.1 570.4,487.1 563.5,485.4 555.6,477.1 551.0,442.9 549.9,440.7 550.7,431.2","cx":646.0,"cy":488.9},
@@ -170,16 +306,42 @@ const DISTRICT_DATA = {
 };
 
 const NAMES = Object.keys(DISTRICT_DATA);
-let correct=0, tries=0, hintOn=false, drag=null, lastHov=null;
+let correct=0, tries=0, drag=null, lastHov=null;
+let timerSec=0, timerInterval=null, gameStarted=false;
+let finalTimeSec=0;
 const ghost=document.getElementById('ghost');
 
+// ── 타이머 ──
+function startTimer(){
+  if(gameStarted) return;
+  gameStarted=true;
+  timerInterval=setInterval(()=>{
+    timerSec++;
+    const m=String(Math.floor(timerSec/60)).padStart(2,'0');
+    const s=String(timerSec%60).padStart(2,'0');
+    document.getElementById('timer-display').textContent=`${m}:${s}`;
+  },1000);
+}
+function stopTimer(){
+  clearInterval(timerInterval);
+  finalTimeSec=timerSec;
+}
+function fmtTime(sec){
+  const m=Math.floor(sec/60), s=sec%60;
+  return `${m}분 ${s}초`;
+}
+
+// ── 지도 구축 ──
 function buildMap(){
   const dg=document.getElementById('dzones'), lg=document.getElementById('lbls');
   dg.innerHTML=''; lg.innerHTML='';
   NAMES.forEach(n=>{
-    const d=DISTRICT_DATA[n];
+    const d=DISTRICT_DATA[n], color=COLORS[n]||'#888';
     const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    p.setAttribute('points',d.pts); p.setAttribute('class','dz'); p.dataset.n=n;
+    p.setAttribute('points',d.pts);
+    p.setAttribute('class','dz');
+    p.setAttribute('fill',color);
+    p.dataset.n=n;
     dg.appendChild(p);
     const t=document.createElementNS('http://www.w3.org/2000/svg','text');
     t.setAttribute('x',d.cx); t.setAttribute('y',d.cy);
@@ -188,18 +350,34 @@ function buildMap(){
   });
 }
 
+// ── 조각 구축 ──
 function buildPieces(){
   const c=document.getElementById('pieces'); c.innerHTML='';
   [...NAMES].sort(()=>Math.random()-.5).forEach(n=>{
+    const color=COLORS[n]||'#888';
+    // 밝은 배경색 계산
     const el=document.createElement('div');
     el.className='piece'; el.textContent=n; el.dataset.n=n;
+    el.style.background=color+'22';
+    el.style.borderColor=color;
+    el.style.color=darken(color);
     el.addEventListener('mousedown',onMD);
     el.addEventListener('touchstart',onTS,{passive:false});
     c.appendChild(el);
   });
 }
 
+function darken(hex){
+  // 색상을 조금 더 어둡게
+  const r=parseInt(hex.slice(1,3),16);
+  const g=parseInt(hex.slice(3,5),16);
+  const b=parseInt(hex.slice(5,7),16);
+  return `rgb(${Math.max(0,r-60)},${Math.max(0,g-60)},${Math.max(0,b-60)})`;
+}
+
+// ── 드래그 ──
 function startDrag(el,x,y){
+  startTimer();
   drag=el; el.classList.add('drag');
   ghost.textContent=el.dataset.n; ghost.style.display='block';
   moveGhost(x,y); updateHov(x,y);
@@ -222,24 +400,27 @@ function endDrag(x,y){
   tries++;
   if(h===pn){
     correct++;
-    document.querySelector(`.dz[data-n="${pn}"]`).classList.add('ok');
+    const dz=document.querySelector(`.dz[data-n="${pn}"]`);
+    dz.classList.add('ok');
     const t=document.querySelector(`.lbl[data-n="${pn}"]`);
-    t.textContent=pn; t.classList.add('ok'); t.classList.remove('hint-on');
+    t.textContent=pn; t.classList.add('ok');
     drag.classList.add('gone');
     showFb(true,pn);
   } else if(h){
     showFb(false,null);
     const e=document.querySelector(`.dz[data-n="${h}"]`);
     e.classList.add('bad');
-    setTimeout(()=>e.classList.remove('bad'),450);
+    setTimeout(()=>e.classList.remove('bad'),500);
   } else { showFb(false,null); }
   drag=null; updateStats();
-  if(correct===NAMES.length) setTimeout(showDone,650);
+  if(correct===NAMES.length){
+    stopTimer();
+    setTimeout(showDone,700);
+  }
 }
 
 function hitName(cx,cy){
   const r=document.getElementById('map-area').getBoundingClientRect();
-  const svgEl=document.getElementById('map-svg');
   const vw=780,vh=680,pw=r.width,ph=r.height;
   const sc=Math.min(pw/vw,ph/vh);
   const ox=(pw-vw*sc)/2, oy=(ph-vh*sc)/2;
@@ -247,7 +428,6 @@ function hitName(cx,cy){
   for(const n of NAMES){ if(pip(sx,sy,DISTRICT_DATA[n].pts)) return n; }
   return null;
 }
-
 function pip(x,y,pts){
   const ps=pts.trim().split(' ').map(p=>p.split(',').map(Number));
   let inside=false;
@@ -270,35 +450,78 @@ function showFb(ok,name){
 function updateStats(){
   document.getElementById('nc').textContent=correct;
   document.getElementById('nt').textContent=tries;
-  document.getElementById('nr').textContent=NAMES.length-correct;
   document.getElementById('pgfill').style.width=(correct/NAMES.length*100)+'%';
   document.getElementById('pcount').textContent=NAMES.length-correct;
 }
 
-function showDone(){
-  document.getElementById('ftry').textContent=tries+'회';
+async function showDone(){
+  document.getElementById('f-time').textContent=fmtTime(finalTimeSec);
+  document.getElementById('f-try').textContent=tries+'회';
   document.getElementById('done').classList.add('show');
+  await loadRanking();
 }
 
-function toggleHint(){
-  hintOn=!hintOn;
-  const b=document.getElementById('hbtn');
-  b.textContent=hintOn?'힌트 켜짐':'지명 힌트';
-  b.classList.toggle('on',hintOn);
-  document.querySelectorAll('.lbl').forEach(e=>{
-    if(e.classList.contains('ok')) return;
-    e.textContent=hintOn?e.dataset.n:'';
-    e.classList.toggle('hint-on',hintOn);
-  });
+// ── Firebase 랭킹 ──
+async function submitRanking(){
+  const name=document.getElementById('name-input').value.trim();
+  if(!name){ alert('이름을 입력해주세요!'); return; }
+  if(!window._db){ alert('랭킹 서버에 연결 중입니다. 잠시 후 다시 시도해주세요.'); return; }
+  try{
+    await window._addDoc(window._col, {
+      name, time: finalTimeSec, tries,
+      timeStr: fmtTime(finalTimeSec),
+      createdAt: new Date()
+    });
+    await loadRanking(name);
+    document.querySelector('.btn-submit').textContent='✅ 등록 완료!';
+    document.querySelector('.btn-submit').disabled=true;
+  }catch(e){
+    alert('등록 중 오류가 발생했습니다: '+e.message);
+  }
 }
+
+async function loadRanking(myName=''){
+  const list=document.getElementById('rank-list');
+  list.innerHTML='<p style="text-align:center;color:#aaa;font-size:13px">불러오는 중...</p>';
+  if(!window._db) return;
+  try{
+    const q=window._query(window._col, window._orderBy('time','asc'), window._limit(20));
+    const snap=await window._getDocs(q);
+    if(snap.empty){ list.innerHTML='<p style="text-align:center;color:#aaa;font-size:13px">아직 기록이 없어요!</p>'; return; }
+    const medals=['🥇','🥈','🥉'];
+    const medalClass=['gold','silver','bronze'];
+    list.innerHTML='';
+    snap.docs.forEach((doc,i)=>{
+      const d=doc.data();
+      const isMe=myName&&d.name===myName;
+      const row=document.createElement('div');
+      row.className='rank-row'+(isMe?' rank-me':'');
+      row.innerHTML=`
+        <span class="rank-num ${medalClass[i]||''}">${medals[i]||i+1}</span>
+        <span class="rank-name">${d.name}${isMe?' 👈':''}</span>
+        <span class="rank-time">${d.timeStr||fmtTime(d.time)}</span>
+        <span class="rank-tries">${d.tries}회</span>
+      `;
+      list.appendChild(row);
+    });
+  }catch(e){
+    list.innerHTML='<p style="text-align:center;color:#e05;">랭킹을 불러올 수 없습니다.</p>';
+  }
+}
+
+window.submitRanking=submitRanking;
 
 function restart(){
-  correct=0; tries=0; hintOn=false;
+  correct=0; tries=0; timerSec=0; gameStarted=false; finalTimeSec=0;
+  clearInterval(timerInterval);
+  document.getElementById('timer-display').textContent='00:00';
   document.getElementById('done').classList.remove('show');
-  document.getElementById('hbtn').textContent='지명 힌트';
-  document.getElementById('hbtn').classList.remove('on');
+  document.querySelector('.btn-submit').textContent='🏆 랭킹 등록';
+  document.querySelector('.btn-submit').disabled=false;
+  document.getElementById('name-input').value='';
   buildMap(); buildPieces(); updateStats();
 }
+window.restart=restart;
 
 function onMD(e){ e.preventDefault(); startDrag(e.currentTarget,e.clientX,e.clientY); }
 document.addEventListener('mousemove',e=>{ if(drag) moveGhost(e.clientX,e.clientY); });
